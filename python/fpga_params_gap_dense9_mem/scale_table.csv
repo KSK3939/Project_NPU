@@ -1,0 +1,12 @@
+﻿export_name,keras_layer,type,input_scale,weight_scale,bias_scale,output_scale,weight_shape,weight_count,bias_count,weight_overflow_count,mem_weight,mem_bias,note
+conv1,conv1,Conv2D,128,64,8192,8192,"(3, 3, 1, 8)",72,8,0,conv1_w.mem,conv1_b.mem,weight int8; bias int64; flat order kh->kw->ci->co
+bn1,bn1,BatchNormalization,8192,,,128,"(8,)",8,,,bn1_mul.mem,bn1_add.mem,y_int = ((x_int * bn_mul) >>> 16) + bn_add
+pool1,pool1,MaxPooling2D,128,,,128,,,,,,,scale unchanged
+conv2,conv2,Conv2D,128,64,8192,8192,"(3, 3, 8, 16)",1152,16,0,conv2_w.mem,conv2_b.mem,weight int8; bias int64; flat order kh->kw->ci->co
+bn2,bn2,BatchNormalization,8192,,,128,"(16,)",16,,,bn2_mul.mem,bn2_add.mem,y_int = ((x_int * bn_mul) >>> 16) + bn_add
+pool2,pool2,MaxPooling2D,128,,,128,,,,,,,scale unchanged
+conv3,conv3,Conv2D,128,64,8192,8192,"(3, 3, 16, 32)",4608,32,0,conv3_w.mem,conv3_b.mem,weight int8; bias int64; flat order kh->kw->ci->co
+bn3,bn3,BatchNormalization,8192,,,128,"(32,)",32,,,bn3_mul.mem,bn3_add.mem,y_int = ((x_int * bn_mul) >>> 16) + bn_add
+pool3,pool3,MaxPooling2D,128,,,128,,,,,,,scale unchanged
+gap,gap,GlobalAveragePooling2D,128,,,128,,,,,,,"gap_out[c] = sum(pool3[h,w,c]) / 36; scale unchanged"
+gap_fc,fc_out,Dense,128,64,8192,8192,"(32, 9)",288,9,3,gap_fc_w.mem,gap_fc_b.mem,GAP FC weight int8; bias int64; flat order input->output
